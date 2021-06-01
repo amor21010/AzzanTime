@@ -5,13 +5,25 @@ import androidx.annotation.Keep
 
 @Keep
 data class Timings(
-    val Asr: String,
-    val Dhuhr: String,
     val Fajr: String,
-    val Imsak: String,
-    val Isha: String,
-    val Maghrib: String,
-    val Midnight: String,
     val Sunrise: String,
-    val Sunset: String
-)
+    val Dhuhr: String,
+    val Asr: String,
+    val Sunset: String,
+    val Maghrib: String,
+    val Isha: String,
+    val Imsak: String,
+    val Midnight: String
+) {
+
+    fun getTimingAsList(): List<String> {
+        return listOf(
+            "Fajr : /$Fajr",
+            "Sunrise : /$Sunrise",
+            "Dhuhr : /$Dhuhr",
+            "Asr : /$Asr",
+            "Maghrib : /$Maghrib",
+            "Isha : /$Isha"
+        )
+    }
+}
