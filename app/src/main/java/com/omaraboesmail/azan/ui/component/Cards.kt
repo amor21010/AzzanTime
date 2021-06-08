@@ -22,8 +22,7 @@ import com.omaraboesmail.azan.ui.theme.Typography
 
 @Composable
 fun CreateAzzanTimesCards(timings: List<String>, passedAzaan: List<String>) {
-    LazyColumn() {
-        Log.d("TAGtttt", "CreateAzzanTimesCards: $passedAzaan")
+    LazyColumn {
         itemsIndexed(timings) { index: Int, item: String ->
             TimeCard(AzzanTime = item, index, passedAzaan.size)
         }

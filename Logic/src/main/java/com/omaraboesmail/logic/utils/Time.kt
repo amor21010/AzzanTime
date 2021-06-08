@@ -25,7 +25,6 @@ fun difference(start: Time, stop: Time): Time {
 
 fun getNextPray(azzanTimes: Timings): String {
     val timesDiffs = getTimeDeffs(azzanTimes)
-    Log.d("TAGOOOO", "getNextPray: $timesDiffs")
     var nextPray: String = timesDiffs[0]
 
     timesDiffs.forEach { time ->
@@ -76,5 +75,5 @@ fun getPassedAzzanList(azzanTimes: Timings): List<String> {
 
 fun getCurrentTime(): String {
     val currentDateTime = Calendar.getInstance().time
-    return SimpleDateFormat("hh:mm",Locale("En")).format(currentDateTime)
+    return SimpleDateFormat("HH:mm:ss",Locale("En")).format(currentDateTime)
 }

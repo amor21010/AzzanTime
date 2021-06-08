@@ -9,32 +9,29 @@ import androidx.lifecycle.viewModelScope
 import com.omaraboesmail.entities.Data
 import com.omaraboesmail.entities.Timings
 import com.omaraboesmail.logic.AzzanRepo
-import com.omaraboesmail.logic.utils.Time
-import com.omaraboesmail.logic.utils.difference
 import com.omaraboesmail.logic.utils.getNextPray
 import com.omaraboesmail.logic.utils.getPassedAzzanList
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 class MainViewModel @ViewModelInject constructor(val azzanRepo: AzzanRepo) : ViewModel() {
 
     private val apiResponseData = MutableLiveData<Data>()
+    private val _isLoding = MutableLiveData<Boolean>()
 
 
     fun getAzzanTimes(): LiveData<Data> {
         viewModelScope.launch {
+            _isLoding.value = true
             azzanRepo.getAzzanTimes("cairo").apply {
+                _isLoding.value = false
                 apiResponseData.value = data
-                Log.d("ressssss", "$this: ")
             }
         }
         return apiResponseData
     }
 
-    fun getNextPrayTime(times: Timings)=getNextPray(times)
-    fun getPassedAzzanTimes(times: Timings)= getPassedAzzanList(times)
+    fun getNextPrayTime(times: Timings) = getNextPray(times)
+    fun getPassedAzzanTimes(times: Timings) = getPassedAzzanList(times)
 
 }
