@@ -10,8 +10,10 @@ import com.omaraboesmail.entities.AzzanTimesQuery
 import com.omaraboesmail.entities.Data
 import com.omaraboesmail.entities.Timings
 import com.omaraboesmail.logic.AzzanRepo
+import com.omaraboesmail.logic.utils.getFormattedTime
 import com.omaraboesmail.logic.utils.getNextPray
 import com.omaraboesmail.logic.utils.getPassedAzzanList
+import com.omaraboesmail.logic.utils.getTimeRemainingInMiles
 import kotlinx.coroutines.launch
 
 
@@ -38,5 +40,7 @@ class MainViewModel @ViewModelInject constructor(val azzanRepo: AzzanRepo) : Vie
 
     fun getNextPrayTime(times: Timings) = getNextPray(times)
     fun getPassedAzzanTimes(times: Timings) = getPassedAzzanList(times)
+    fun remainingInMilesFromString(timeString: String): Long = getTimeRemainingInMiles(timeString)
+    fun getFormattedTimeFromMiles(timeinMills: Long): String = getFormattedTime(timeinMills)
 
 }
