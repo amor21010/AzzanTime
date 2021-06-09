@@ -77,3 +77,31 @@ fun getCurrentTime(): String {
     val currentDateTime = Calendar.getInstance().time
     return SimpleDateFormat("HH:mm:ss",Locale("En")).format(currentDateTime)
 }
+
+fun getFormattedTime(mTimeLeftInMillis: Long): String {
+    val hours = (mTimeLeftInMillis / 1000).toInt() / 3600
+    val minutes = (mTimeLeftInMillis / 1000 % 3600).toInt() / 60
+    val seconds = (mTimeLeftInMillis / 1000).toInt() % 60
+    val timeLeftFormatted: String = if (hours > 0) {
+        java.lang.String.format(
+            Locale.getDefault(),
+            "%d:%02d:%02d", hours, minutes, seconds
+        )
+    } else {
+        java.lang.String.format(
+            Locale.getDefault(),
+            "%02d:%02d", minutes, seconds
+        )
+    }
+    return timeLeftFormatted
+}
+
+
+fun getTimeRemainingInMiles(remainingTimeString: String): Long {
+    val hourText = remainingTimeString.split(":")[0].toInt()
+    val minText = remainingTimeString.split(":")[1].toInt()
+    val countTimeHoursInMiles =
+        (hourText * 60 * 60 * 1000).toLong()
+    val countTimeMinInMillis = (minText * 60 * 1000).toLong()
+    return countTimeHoursInMiles + countTimeMinInMillis
+}
