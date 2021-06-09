@@ -30,13 +30,15 @@ import java.util.*
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    private val remainingTimeState =
+    private val remainingTime =
         mutableStateOf("00:00")
-    val query =
+    private val query =
         mutableStateOf("cairo")
+    private val remainingTimeString = mutableStateOf("")
 
+    private val timeInMillis = mutableStateOf(0L)
     private lateinit var countDownTimer: CountDownTimer
-    private val responceData = mutableStateOf<Data?>(null)
+    private val responseData = mutableStateOf<Data?>(null)
 
     private val viewModel: MainViewModel by viewModels()
 
@@ -48,7 +50,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             AzzanTheme {
                 Surface {
-                    CreateView(data = responceData.value)
+                    CreateView(data = responseData.value)
 
                 }
             }
@@ -115,38 +117,9 @@ class MainActivity : ComponentActivity() {
 
 //remaining
 
-
-            val remainingTime = rememberSaveable {
-                remainingTimeState
-            }
-            val remainingTimeString: String = viewModel.getNextPrayTime(times).split("/")[1]
-
             val remainingIcon = painterResource(id = R.drawable.ic_hourglass)
-            val hourText = remainingTimeString.split(":")[0].toInt()
-            val minText = remainingTimeString.split(":")[1].toInt()
-            val countTimeHoursInMilles =
-                (hourText * 60 * 60 * 1000).toLong()
-            val countTimeMinInMilles = (minText * 60 * 1000).toLong()
-            val timeInMillis =
-                rememberSaveable { mutableStateOf(countTimeHoursInMilles + countTimeMinInMilles) }
 
 
-
-            countDownTimer = object : CountDownTimer(timeInMillis.value, 1000) {
-                override fun onTick(millisUntilFinished: Long) {
-
-                    timeInMillis.value = millisUntilFinished
-
-                    updateCountDownText(timeInMillis.value)
-                }
-
-                override fun onFinish() {
-                    remainingTime.value = "00:00"
-                }
-            }
-
-
-            countDownTimer.start()
             val remaining = TextRow(
                 remainingIcon,
                 string = "Remaining : ",
@@ -163,6 +136,14 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    private fun getTimeRemainingInMiles(remainingTimeString: String): Long {
+        val hourText = remainingTimeString.split(":")[0].toInt()
+        val minText = remainingTimeString.split(":")[1].toInt()
+        val countTimeHoursInMiles =
+            (hourText * 60 * 60 * 1000).toLong()
+        val countTimeMinInMillis = (minText * 60 * 1000).toLong()
+        return countTimeHoursInMiles + countTimeMinInMillis
+    }
 
     @ExperimentalAnimationApi
     @Composable
@@ -180,30 +161,51 @@ class MainActivity : ComponentActivity() {
                 style = Typography.h3,
             )
             //body
-            viewModel.getAzzanTimes().observe(this@MainActivity) { data ->
-                responceData.value = data
-            }
+
             Column {
 
+                CreateBody()
 
-                CreateBody {
-                    Button(
-                        modifier = Modifier.padding(3.dp),
-                        onClick = { viewModel.changeQuery(query.value) }) {
-                        Text(text = "Go")
-                    }
-
-                }
                 if (data != null) {
                     AnimatedVisibility(visible = true) { CreateTimesView(data = data) }
                 }
             }
+            observeData()
 
         }
     }
 
-     @Composable
-     private  fun CreateBody(function: @Composable () -> Unit) {
+    private fun observeData() {
+        viewModel.getAzzanTimes().observe(this@MainActivity) { data ->
+            if (responseData.value != data) {
+                responseData.value = data
+                val times = data.timings
+                remainingTimeString.value = viewModel.getNextPrayTime(times).split("/")[1]
+                timeInMillis.value =
+                    getTimeRemainingInMiles(remainingTimeString.value)
+                if (this::countDownTimer.isInitialized)
+                    countDownTimer.cancel()
+
+                countDownTimer = object : CountDownTimer(timeInMillis.value, 1000) {
+                    override fun onTick(millisUntilFinished: Long) {
+
+                        timeInMillis.value = millisUntilFinished
+
+                        updateCountDownText(timeInMillis.value)
+                    }
+
+                    override fun onFinish() {
+                        remainingTime.value = "00:00"
+                    }
+                }
+
+                countDownTimer.start()
+            }
+        }
+    }
+
+    @Composable
+    private fun CreateBody() {
 
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -212,7 +214,7 @@ class MainActivity : ComponentActivity() {
             Card(Modifier.padding(4.dp)) {
                 Column(Modifier.padding(4.dp)) {
                     val selectedButton = rememberSaveable {
-                        query
+                        mutableStateOf("cairo")
                     }
                     Row(
                         Modifier.fillMaxWidth(),
@@ -220,39 +222,49 @@ class MainActivity : ComponentActivity() {
                         horizontalArrangement = Arrangement.Center
                     ) {
 
-                        RadioButton(selected = selectedButton.value.equals("cairo"), onClick = {
+                        RadioButton(selected = selectedButton.value == "cairo", onClick = {
                             selectedButton.value = "cairo"
                         })
                         Text(
                             text = "Cairo",
                             Modifier
-                                .padding(end = 10.dp)
+                                .padding(end = 10.dp, start = 4.dp)
                                 .clickable { selectedButton.value = "cairo" })
 
 
                         RadioButton(
 
-                            selected = selectedButton.value.equals("alexandria"),
+                            selected = selectedButton.value == "alexandria",
                             onClick = {
                                 selectedButton.value = "alexandria"
                             })
                         Text(
                             text = "Alexandria",
                             Modifier
-                                .padding(end = 20.dp)
+                                .padding(end = 14.dp, start = 4.dp)
                                 .clickable { selectedButton.value = "alexandria" })
-                        function()
-                    }
-                 /*   Column(
-                        Modifier.fillMaxWidth(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-//                    RadioButton(selected = selectedButton.value.equals("MyLocation"), onClick = {
-//                        selectedButton.value = "MyLocation"
-//                    })
-//                    Text(text = "My Location",Modifier.padding(4.dp))
+                        Button(
+                            modifier = Modifier.padding(3.dp),
+                            onClick = {
+                                query.value = selectedButton.value
+                                viewModel.changeQuery(query.value)
 
-                    }*/
+                            }) {
+                            Text(text = "Show times")
+                        }
+
+
+                    }
+                    /*   Column(
+                           Modifier.fillMaxWidth(),
+                           horizontalAlignment = Alignment.CenterHorizontally
+                       ) {
+   //                    RadioButton(selected = selectedButton.value.equals("MyLocation"), onClick = {
+   //                        selectedButton.value = "MyLocation"
+   //                    })
+   //                    Text(text = "My Location",Modifier.padding(4.dp))
+
+                       }*/
 
 
                 }
@@ -261,9 +273,7 @@ class MainActivity : ComponentActivity() {
 
     }
 
-    private fun updateCountDownText(
-        mTimeLeftInMillis: Long,
-    ) {
+    private fun updateCountDownText(mTimeLeftInMillis: Long) {
         val hours = (mTimeLeftInMillis / 1000).toInt() / 3600
         val minutes = (mTimeLeftInMillis / 1000 % 3600).toInt() / 60
         val seconds = (mTimeLeftInMillis / 1000).toInt() % 60
@@ -278,7 +288,7 @@ class MainActivity : ComponentActivity() {
                 "%02d:%02d", minutes, seconds
             )
         }
-        remainingTimeState.value = timeLeftFormatted
+        remainingTime.value = timeLeftFormatted
     }
 
 }
