@@ -9,8 +9,8 @@ import androidx.compose.ui.graphics.Color
 import com.omaraboesmail.azan.ui.theme.Typography
 
 private val DarkColorPalette = darkColors(
-    primary = Purple200,
-    primaryVariant = Purple700,
+    primary = Teal200,
+    primaryVariant = Teal200,
     secondary = Teal200
 )
 

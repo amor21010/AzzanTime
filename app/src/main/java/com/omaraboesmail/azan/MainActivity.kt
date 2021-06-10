@@ -84,7 +84,7 @@ class MainActivity : ComponentActivity() {
                 CreateBody()
 
                 if (data != null) {
-                    AnimatedVisibility(visible = true) { CreateTimesView(data = data) }
+                    AnimatedVisibility(visible = true) { CreateInfoView(data = data) }
                 }
             }
             observeData()
@@ -170,7 +170,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    private fun CreateTimesView(data: Data) {
+    private fun CreateInfoView(data: Data) {
         val times = data.timings
 
         Column(modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)) {
