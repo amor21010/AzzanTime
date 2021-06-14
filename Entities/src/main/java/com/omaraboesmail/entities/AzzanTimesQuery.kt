@@ -1,7 +1,9 @@
 package com.omaraboesmail.entities
 
+import android.location.Location
+
 data class AzzanTimesQuery(
-    val city: String? = null,
-    val timestamp: String? = null,
-    val location: String? = null
+    var city: String? = null,
+    var timestamp: String? = null,
+    var location: Location? = null
 )
