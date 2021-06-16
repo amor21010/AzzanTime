@@ -1,7 +1,6 @@
 package com.omaraboesmail.azan
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
@@ -162,13 +161,6 @@ class MainActivity : ComponentActivity() {
                         ) {
                             selectedButton.value = "alexandria"
                         }
-
-                    }
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
                         CreateRadioButton(
                             name = "My Location",
                             isSelected = selectedButton.value == "My Location"
@@ -176,6 +168,13 @@ class MainActivity : ComponentActivity() {
                             selectedButton.value = "My Location"
 
                         }
+                    }
+
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
 
                         Button(
                             modifier = Modifier.padding(4.dp),
@@ -197,7 +196,6 @@ class MainActivity : ComponentActivity() {
                         ) {
                             Text(text = "Show times")
                         }
-
                     }
                 }
 
