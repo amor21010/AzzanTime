@@ -13,8 +13,8 @@ android {
         applicationId "com.omaraboesmail.azan"
         minSdk 23
         targetSdk 30
-        versionCode 4
-        versionName "1.0.2"
+        versionCode 6
+        versionName "1.1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -28,7 +28,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
-            minifyEnabled true
+            minifyEnabled false
         }
     }
     compileOptions {
@@ -64,7 +64,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
-
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
 
     // Dagger Hilt
     implementation "com.google.dagger:hilt-android:$hiltVersion"

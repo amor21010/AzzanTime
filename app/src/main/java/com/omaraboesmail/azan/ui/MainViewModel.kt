@@ -20,22 +20,28 @@ import kotlinx.coroutines.launch
 class MainViewModel @ViewModelInject constructor(val azzanRepo: AzzanRepo) : ViewModel() {
 
     private val apiResponseData = MutableLiveData<Data>()
-    private val _isLoding = MutableLiveData<Boolean>()
-    private val query = mutableStateOf(AzzanTimesQuery(null))
-
+    private val query = mutableStateOf(AzzanTimesQuery(""))
     fun getAzzanTimes(): LiveData<Data> {
         viewModelScope.launch {
-            _isLoding.value = true
-            azzanRepo.getAzzanTimes(query.value.city)?.apply {
-                _isLoding.value = false
-                apiResponseData.value = data
+            query.value.let {
+                try {
+                    azzanRepo.getAzzanTimes(it).apply {
+                        apiResponseData.value = data
+                    }
+                } catch (e: Exception) {
+
+                }
+
             }
+
+
         }
         return apiResponseData
     }
 
-    fun changeQuery(city: String) {
-        query.value = AzzanTimesQuery(city = city)
+    fun changeQuery(timesQuery: AzzanTimesQuery) {
+        query.value = timesQuery
+        getAzzanTimes()
     }
 
     fun getNextPrayTime(times: Timings) = getNextPray(times)
